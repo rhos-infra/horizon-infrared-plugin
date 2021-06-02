@@ -1,0 +1,24 @@
+# THIS IS DONE (ALL OF THE BELOW)
+#1. Ensure git command is installed (DONE)
+# -> If it's not use yum to install git (DONE)
+#2. Create temporary folder DONE
+#3. git clone the selenium repository from the {{ horizon_selenium_gitrepo }} 
+#4. Checkout the git repo branch from {{ horizon_selenium_git_branch }}
+
+- name: Install git if not present
+  become: true
+  become_user: root
+  yum:
+    name: 'git'
+    state: present
+
+- name: print temp folder
+  debug:
+    var: selenium_tests_temp.path
+
+- name: Clone the Selenium repository from Horizon Selenium git_repo
+  ansible.builtin.git:
+    repo: '{{ horizon_selenium_gitrepo }}' 
+    dest: '{{ selenium_tests_temp.path }}'
+    version: '{{ horizon_selenium_git_branch }}'
+  when: selenium_tests_temp.path is defined

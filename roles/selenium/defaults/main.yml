@@ -1,0 +1,7 @@
+---
+geckodriver_base_url: "https://github.com/mozilla/geckodriver/releases/download/"
+geckodriver_version: "0.29.0"
+
+horizon_selenium_gitrepo: "https://opendev.org/openstack/horizon.git"
+horizon_selenium_git_branch: "stable/train"
+horizon_selenium_conf: "openstack_dashboard/test/integration_tests/local-horizon.conf"

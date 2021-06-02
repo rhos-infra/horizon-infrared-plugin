@@ -1,0 +1,57 @@
+#1. Discover the api key from openstack installation
+#2. Discover username from openstack installation
+#3. Discover password from openstack installation
+#4. Discover dashboard_url from openstack installation
+
+#Use 1.2.3.4 to update the "{{ horizon_selenium_conf }}" file found in the temporary folder that was created using
+#get_selenium_from_git.yml task.
+
+#Use 1.2.3.4 to update the "{{ horizon_selenium_conf }}" file found in the temporary folder that was created using
+#get_selenium_from_git.yml task.
+
+
+- name: print temp folder
+  debug:
+    var: selenium_tests_temp.path
+
+
+- name: Get username from openstack installation
+  shell: grep OS_USERNAME overcloudrc | awk -F"=" '{print "username=" $2}'
+  register: username
+  args:
+    chdir: /home/stack
+
+- name: Get password from openstack installation
+  shell: grep OS_PASSWORD overcloudrc | awk -F"=" '{print "password=" $2}'
+  register: password
+  args:
+    chdir: /home/stack
+
+- name: Get dashboard URL from openstack installation
+  shell: grep OS_AUTH_URL overcloudrc | awk -F"=" '{print "url=" $2}'
+  register: url
+  args:
+    chdir: /home/stack
+
+#- name: Get the tenant ID from openstack installation <Don't know how to do that>
+#    - shell: |
+#        . overcloudrc
+
+
+
+#- name: Get the API key from openstack installstion <Don't know how to do that>
+#  
+
+
+- name: Set the config file
+  ansible.builtin.lineinfile:
+    path: "{{ selenium_tests_temp.path }}"
+    state: present
+    line: '{ item }'
+    group: 'identity'
+  with_items:
+    - "{{ username }}"
+    - "{{ password }}"
+    - "{{ url }}"
+
+
