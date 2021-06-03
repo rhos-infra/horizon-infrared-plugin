@@ -1,0 +1,8 @@
+- name: Run tests
+  shell: |-
+    cd {{ selenium_tests_temp.path }}
+    virtualenv .venv
+    . .venv/bin/activate
+    pip install tox    
+    tox -e integration
+

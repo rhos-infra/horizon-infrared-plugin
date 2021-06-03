@@ -13,9 +13,10 @@ subparsers:
                   boolflag:
                       type: bool
                       help: "simple boolean option"
-                      default:true
+                      default: true
 
                   otherboolflag:
                       type: bool
                       help: "another boolean flag option"
-		      default: true	              
+                      default: true
+

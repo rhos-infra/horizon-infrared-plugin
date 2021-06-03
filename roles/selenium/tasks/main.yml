@@ -44,3 +44,7 @@
 - name: Configure Selenium config file
   include_tasks: configure_selenium_config.yml
   when: selenium_tests_temp.path is defined
+
+- name: Run Horizon selenium tests
+  include_tasks: run_selenium_tests.yml
+
