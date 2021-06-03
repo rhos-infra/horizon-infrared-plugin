@@ -1,0 +1,5 @@
+# Do not touch - later for infrared integration
+- hosts: undercloud
+  tasks: 
+    - name: Install required packages
+      import_tasks: "tasks/prepare_selenium_tests.yml"

@@ -1,0 +1,46 @@
+- name: Install required packages
+  become: true
+  become_user: root
+  yum:
+    name: ['xorg-x11-server-Xvfb', 'firefox']
+    state: present
+
+- name: Create temp directory for geckodriver
+  tempfile:
+    state: directory
+    suffix: "-geckodriver"
+  register: geckodriver_temp
+
+- name: Download geckodriver
+  get_url:
+    url: "{{ geckodriver_base_url }}v{{ geckodriver_version }}/geckodriver-v{{ geckodriver_version }}-linux64.tar.gz"
+    dest: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
+  when: geckodriver_temp.path is defined
+
+- name: Extract the geckodriver
+  become: true
+  become_user: root
+  unarchive:
+    src: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
+    dest: "/usr/local/bin"
+    remote_src: true
+
+- name: Remove temp files
+  file:
+    path: "{{ geckodriver_temp.path }}"
+    state: absent
+  when: geckodriver_temp.path is defined
+
+- name: Create temp directory for selenium tests
+  tempfile:
+    state: directory
+    suffix: "-selenium-tests"
+  register: selenium_tests_temp
+
+- name: Get selenium tests
+  include_tasks: get_selenium_from_git.yml
+  when: selenium_tests_temp.path is defined
+
+- name: Configure Selenium config file
+  include_tasks: configure_selenium_config.yml
+  when: selenium_tests_temp.path is defined
