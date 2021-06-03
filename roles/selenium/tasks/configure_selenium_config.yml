@@ -57,5 +57,5 @@
 - name: Create conf file from template
   template:
     src: templates/local-horizon.conf.j2
-    dest: "{{ selenium_tests_temp.path }}/local-horizon.conf"
+    dest: "{{ selenium_tests_temp.path }}/openstack_dashboard/test/local-horizon.conf"
 
