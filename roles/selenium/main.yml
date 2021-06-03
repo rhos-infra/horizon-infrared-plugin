@@ -1,5 +1,9 @@
 # Do not touch - later for infrared integration
 - hosts: undercloud
   tasks: 
+    - name: DEBUG TASK
+      debug:
+        msg: "THIS IS main.yml under the role folder"
     - name: Install required packages
       import_tasks: "tasks/prepare_selenium_tests.yml"
+
