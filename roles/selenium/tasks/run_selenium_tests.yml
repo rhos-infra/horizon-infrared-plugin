@@ -5,4 +5,5 @@
     . .venv/bin/activate
     pip install tox    
     tox -e integration
+    SELENIUM_HEADLESS=1 pytest openstack_dashboard/test/integration_tests --ds=openstack_dashboard.test.settings -v --junitxml="test_reports/integration_test_results.xml" --html="test_reports/integration_test_results.html" --self-contained-html
 

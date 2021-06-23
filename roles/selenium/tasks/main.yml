@@ -5,6 +5,13 @@
     name: ['xorg-x11-server-Xvfb', 'firefox']
     state: present
 
+- name: Install required pytest packages
+  become: true
+  become_user: root
+  pip:
+    name: ['pytest', 'pytest-django', 'pytest-html']
+    state: present
+
 - name: Create temp directory for geckodriver
   tempfile:
     state: directory
