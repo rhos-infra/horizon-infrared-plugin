@@ -5,3 +5,8 @@ geckodriver_version: "0.29.0"
 horizon_selenium_gitrepo: "https://opendev.org/openstack/horizon.git"
 horizon_selenium_git_branch: "stable/train"
 horizon_selenium_conf: "openstack_dashboard/test/integration_tests/local-horizon.conf"
+#horizon_selenium_gitrepo: "ssh://ikanias@code.engineering.redhat.com:22/horizon.git"
+#horizon_selenium_git_branch: "rhos-16.1-trunk-patches"
+#horizon_selenium_conf: "openstack_dashboard/test/integration_tests/local-horizon.conf"
+
+

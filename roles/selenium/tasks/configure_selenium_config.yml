@@ -14,24 +14,38 @@
   debug:
     var: selenium_tests_temp.path
 
+- name: Get admin username from openstack installation
+  shell: grep OS_USERNAME overcloudrc | awk -F"=" '{print "admin_username=" $2}'
+  register: admin_username
+  args:
+    chdir: /home/stack
 
-- name: Get username from openstack installation
-  shell: grep OS_USERNAME overcloudrc | awk -F"=" '{print "username=" $2}'
+- name: Get password for admin_user from openstack installation
+  shell: grep OS_PASSWORD overcloudrc | awk -F"=" '{print "admin_password=" $2}'
+  register: admin_password
+  args:
+    chdir: /home/stack
+
+- name: Get demo username from openstack installation
+  shell: echo | awk '{print "username=" "demo"}'
   register: username
   args:
     chdir: /home/stack
 
-- name: Get password from openstack installation
-  shell: grep OS_PASSWORD overcloudrc | awk -F"=" '{print "password=" $2}'
+- name: Get password for demo_user from openstack installation
+  shell: echo | awk '{print "password=" "secretadmin"}'
   register: password
   args:
     chdir: /home/stack
 
 - name: Get dashboard URL from openstack installation
-  shell: grep OS_AUTH_URL overcloudrc | awk -F"=" '{print "url=" $2}'
-  register: url
+  shell: |
+   #echo | awk '{print "dashboard_url=" "http://10.0.0.116/dashboard/"}'
+    grep OS_AUTH_URL overcloudrc | awk -F"=" '{print "dashboard_url=" $2"/dashboard/"}' | awk '{gsub(/:5000/, ""); print}'
+  register: dashboard_url
   args:
     chdir: /home/stack
+
 
 #- name: Get the tenant ID from openstack installation <Don't know how to do that>
 #    - shell: |
@@ -43,15 +57,19 @@
 #  
 
 
-- name: Set the config file
-  ansible.builtin.lineinfile:
-    path: "{{ selenium_tests_temp.path }}"
-    state: present
-    line: '{ item }'
-    group: 'identity'
-  with_items:
-    - "{{ username }}"
-    - "{{ password }}"
-    - "{{ url }}"
-
+    #- name: Set the config file
+    #  ansible.builtin.lineinfile:
+    #    path: "{{ selenium_tests_temp.path }}/local-horizon.conf"
+    #    state: present
+    #    create: yes
+    #    line: "{{ item }}"
+    #group: 'identity'  -- This is used to change group ownership!
+    #  with_items:
+    #    - "{{ username }}"
+    #    - "{{ password }}"
+    #    - "{{ url }}"
+- name: Create conf file from template
+  template:
+    src: templates/local-horizon.conf.j2
+    dest: "{{ selenium_tests_temp.path }}/openstack_dashboard/test/integration_tests/local-horizon.conf"
 
