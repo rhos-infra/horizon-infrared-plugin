@@ -18,7 +18,9 @@
 
 - name: Clone the Selenium repository from Horizon Selenium git_repo
   ansible.builtin.git:
-    repo: '{{ horizon_selenium_gitrepo }}' 
+    repo: '{{ horizon_selenium_gitrepo }}'
+    accept_hostkey: yes
+    ssh_opts: -o StrictHostKeyChecking=no 
     dest: '{{ selenium_tests_temp.path }}'
     version: '{{ horizon_selenium_git_branch }}'
   when: selenium_tests_temp.path is defined
