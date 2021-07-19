@@ -107,21 +107,52 @@
   include_tasks: configure_selenium_config.yml
   when: selenium_tests_temp.path is defined
 
-- name: Create a project and a demo user
+- name: Create a project 
   become: true
   become_user: stack
   shell: |
     source /home/stack/overcloudrc
-    openstack project create --description 'test project' test_project
-    openstack user create --project test_project --password secureadmin demo
+    openstack project create --description 'test project' demo
+
+- name: Add demo user to project
+  become: true
+  become_user: stack
+  shell: |
+    source /home/stack/overcloudrc
+    openstack user create --project demo --password secretadmin demo
+
+- name: Add demo user and demo project to member role
+  become: true
+  become_user: stack
+  shell: |
+    source /home/stack/overcloudrc
+    openstack role add --user demo --project demo member  
+
+- name: Update nova external network name to public
+  become: true
+  become_user: stack
+  shell: |
+    source /home/stack/overcloudrc      
+    openstack network set nova --name public
+
+- name: Add a flavor 
+  become: true
+  become_user: stack
+  shell: |
+    source /home/stack/overcloudrc    
+    nova flavor-create m1.tiny auto 512 1 1 --is-public True
 
 - name: Run Horizon selenium tests
   include_tasks: run_selenium_tests.yml
   when: selenium_tests_temp.path is defined
 
-- name: Delete the created project and demo user
+- name: Remove project, user and flavor and update network name
+  become: true
+  become_user: stack
   shell: |
-    openstack project delete test_project
+    source overcloudrc
+    openstack project delete demo
     openstack user delete demo
-    
+    openstack flavor delete m1.tiny
+    openstack network set public --name nova
 
