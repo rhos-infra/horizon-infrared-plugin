@@ -44,28 +44,12 @@
     sudo dnf -y localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm
     sudo dnf -y install --nogpgcheck https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm
 
-    #- name: Install FFmpeg
-    #become: true
-    #become_user: root
-    #shell: |
-    #sudo yum -y install https://pkgs.org/download/libavdevice.so.58/libavdevice-4.4-2.fc34.i686.rpm
-    #sudo dnf -y install http://rpmfind.net/linux/epel/7/x86_64/Packages/s/SDL2-2.0.14-2.el7.x86_64.rpm
-    #sudo dnf -y install ffmpeg
-    #sudo dnf -y install ffmpeg-devel
-
 - name: Install required packages
   become: true
   become_user: root
   yum:
     name: ['xorg-x11-server-Xvfb', 'firefox']
     state: present
-
-    #- name: Install required pytest packages
-    #become: true
-    #become_user: root
-    #pip:
-    #name: ['pytest', 'pytest-django', 'pytest-html']
-    #state: present
 
 - name: Create temp directory for geckodriver
   tempfile:

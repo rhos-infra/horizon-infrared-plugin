@@ -46,28 +46,6 @@
   args:
     chdir: /home/stack
 
-
-#- name: Get the tenant ID from openstack installation <Don't know how to do that>
-#    - shell: |
-#        . overcloudrc
-
-
-
-#- name: Get the API key from openstack installstion <Don't know how to do that>
-#  
-
-
-    #- name: Set the config file
-    #  ansible.builtin.lineinfile:
-    #    path: "{{ selenium_tests_temp.path }}/local-horizon.conf"
-    #    state: present
-    #    create: yes
-    #    line: "{{ item }}"
-    #group: 'identity'  -- This is used to change group ownership!
-    #  with_items:
-    #    - "{{ username }}"
-    #    - "{{ password }}"
-    #    - "{{ url }}"
 - name: Create conf file from template
   template:
     src: templates/local-horizon.conf.j2
