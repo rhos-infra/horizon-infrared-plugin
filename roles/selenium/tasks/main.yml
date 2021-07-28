@@ -129,7 +129,7 @@
 - name: Run Horizon selenium tests
   include_tasks: run_selenium_tests.yml
   when: selenium_tests_temp.path is defined
-  ignore_errors: yes
+  #ignore_errors: yes
 
 - name: Remove project, user and flavor and update network name
   become: true
