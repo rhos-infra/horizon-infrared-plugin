@@ -124,12 +124,12 @@
   become_user: stack
   shell: |
     source /home/stack/overcloudrc    
-    nova flavor-create m1.tiny auto 512 1 1 --is-public True
+    openstack flavor create --public m1.tiny1 --id auto --ram 512 --disk 1 --vcpus 1 --rxtx-factor 1
 
 - name: Run Horizon selenium tests
   include_tasks: run_selenium_tests.yml
   when: selenium_tests_temp.path is defined
-  #ignore_errors: yes
+  
 
 - name: Remove project, user and flavor and update network name
   become: true
