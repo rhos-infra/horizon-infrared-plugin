@@ -9,11 +9,33 @@
   debug:
     var: selenium_tests_temp.path
 
-- name: Clone the Selenium repository from Horizon Selenium git_repo
+
+#- name: Fetch osp version
+#  become: true
+#  become_user: root
+#  shell: cat /home/stack/core_puddle_version | awk -F "-" '{print $2}'
+#  register: osp_release
+   
+
+- name: Clone the Selenium repository from Horizon Selenium 16.1 git_repo
   ansible.builtin.git:
     repo: '{{ horizon_selenium_gitrepo }}'
     accept_hostkey: yes
     ssh_opts: -o StrictHostKeyChecking=no 
     dest: '{{ selenium_tests_temp.path }}'
     version: '{{ horizon_selenium_git_branch }}'
-  when: selenium_tests_temp.path is defined
+  when:
+    - '"16.1" in osp_release.stdout' 
+    - selenium_tests_temp.path is defined 
+
+- name: Clone the Selenium repository from Horizon Selenium 16.2 git_repo
+  ansible.builtin.git:
+    repo: '{{ horizon_selenium_gitrepo2 }}'
+    accept_hostkey: yes
+    ssh_opts: -o StrictHostKeyChecking=no 
+    dest: '{{ selenium_tests_temp.path }}'
+    version: '{{ horizon_selenium_git_branch2 }}'
+  when: 
+    - '"16.2" in osp_release.stdout' 
+    - selenium_tests_temp.path is defined
+
