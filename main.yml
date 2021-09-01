@@ -2,15 +2,6 @@
   hosts: undercloud
   roles:
     - role: selenium        
-      #  tasks:
-      #      - name: print first boolean  value
-      #        debug:
-      #            msg: "{{ test.boolflag }}"
-      #        
-      #
-      #      - name: print second boolean value 
-      #        debug: 
-      #            msg: "hello world!"
-      #        when: test.otherboolflag
+
 
 
