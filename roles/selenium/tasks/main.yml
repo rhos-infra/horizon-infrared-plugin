@@ -1,154 +1,186 @@
 
-- name: Install rhos-release-latest package and remove old repos
-  become: true
-  become_user: root
-  shell: |
-    rpm -ivh http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm;
-    rhos-release -x;
+- name: Continue running even if Selenium tests fail
+  block:
+    - name: Install rhos-release-latest package and remove old repos
+      become: true
+      become_user: root
+      shell: |
+        rpm -ivh http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm;
+        rhos-release -x;
 
-- name: Fetch osp version
-  become: true
-  become_user: root
-  shell: cat /home/stack/core_puddle_version | awk -F "-" '{print $2}'
-  register: osp_release
+    - name: Fetch osp version
+      become: true
+      become_user: root
+      shell: cat /home/stack/core_puddle_version | awk -F "-" '{print $2}'
+      register: osp_release
 
-- name: Enable latest rhos-repos for OSP16 on overcloud_nodes
-  become: true
-  become_user: root
-  shell: rhos-release -P 16;
-  when: '"16.0" in osp_release.stdout'
+    - name: Enable latest rhos-repos for OSP16 on overcloud_nodes
+      become: true
+      become_user: root
+      shell: rhos-release -P 16;
+      when: '"16.0" in osp_release.stdout'
 
-- name: Enable latest rhos-repos for OSP16.1 on overcloud_nodes
-  become: true
-  become_user: root
-  shell: rhos-release -P 16.1-trunk;
-  when: '"16.1" in osp_release.stdout'
+    - name: Enable latest rhos-repos for OSP16.1 on overcloud_nodes
+      become: true
+      become_user: root
+      shell: rhos-release -P 16.1-trunk;
+      when: '"16.1" in osp_release.stdout'
 
-- name: Enable latest rhos-repos for OSP16.2 on overcloud_nodes
-  become: true
-  become_user: root
-  shell: rhos-release -P 16.2;
-  when: '"16.2" in osp_release.stdout'
+    - name: Enable latest rhos-repos for OSP16.2 on overcloud_nodes
+      become: true
+      become_user: root
+      shell: rhos-release -P 16.2;
+      when: '"16.2" in osp_release.stdout'
 
-- name: Install EPEL repository
-  become: true
-  become_user: root
-  shell: |
-    sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-    sudo rpm -ql epel-release
+    - name: Install EPEL repository
+      become: true
+      become_user: root
+      shell: |
+        sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+        sudo rpm -ql epel-release
 
-- name: Install rpmfusion repository
-  become: true
-  become_user: root
-  shell: |
-    sudo dnf -y localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm
-    sudo dnf -y install --nogpgcheck https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm
+    - name: Install rpmfusion repository
+      become: true
+      become_user: root
+      shell: |
+        sudo dnf -y localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm
+        sudo dnf -y install --nogpgcheck https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm
 
-- name: Install required packages
-  become: true
-  become_user: root
-  yum:
-    name: ['xorg-x11-server-Xvfb', 'firefox']
-    state: present
+    - name: Install required packages
+      become: true
+      become_user: root
+      yum:
+        name: ['xorg-x11-server-Xvfb', 'firefox']
+        state: present
 
-- name: Create temp directory for geckodriver
-  tempfile:
-    state: directory
-    suffix: "-geckodriver"
-  register: geckodriver_temp
+    - name: Create temp directory for geckodriver
+      tempfile:
+        state: directory
+        suffix: "-geckodriver"
+      register: geckodriver_temp
 
-- name: Download geckodriver
-  get_url:
-    url: "{{ geckodriver_base_url }}v{{ geckodriver_version }}/geckodriver-v{{ geckodriver_version }}-linux64.tar.gz"
-    dest: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
-  when: geckodriver_temp.path is defined
+    - name: Download geckodriver
+      get_url:
+        url: "{{ geckodriver_base_url }}v{{ geckodriver_version }}/geckodriver-v{{ geckodriver_version }}-linux64.tar.gz"
+        dest: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
+      when: geckodriver_temp.path is defined
 
-- name: Extract the geckodriver
-  become: true
-  become_user: root
-  unarchive:
-    src: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
-    dest: "/usr/local/bin"
-    remote_src: true
+    - name: Extract the geckodriver
+      become: true
+      become_user: root
+      unarchive:
+        src: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
+        dest: "/usr/local/bin"
+        remote_src: true
 
-- name: Remove temp files
-  file:
-    path: "{{ geckodriver_temp.path }}"
-    state: absent
-  when: geckodriver_temp.path is defined
+    - name: Remove temp files
+      file:
+        path: "{{ geckodriver_temp.path }}"
+        state: absent
+      when: geckodriver_temp.path is defined
 
-- name: Create temp directory for selenium tests
-  tempfile:
-    state: directory
-    suffix: "-selenium-tests"
-  register: selenium_tests_temp
+    - name: Create temp directory for selenium tests
+      tempfile:
+        state: directory
+        suffix: "-selenium-tests"
+      register: selenium_tests_temp
 
-- name: Get selenium tests
-  include_tasks: get_selenium_from_git.yml
-  when: selenium_tests_temp.path is defined
+    - name: Get selenium tests
+      include_tasks: get_selenium_from_git.yml
+      when: selenium_tests_temp.path is defined
 
-- name: Configure Selenium config file
-  include_tasks: configure_selenium_config.yml
-  when: selenium_tests_temp.path is defined
+    - name: Configure Selenium config file
+      include_tasks: configure_selenium_config.yml
+      when: selenium_tests_temp.path is defined
 
-- name: Remove old project, user and flavor
-  become: true
-  become_user: stack
-  shell: |
-    source /home/stack/overcloudrc
-    openstack project delete demo
-    openstack user delete demo
-    openstack flavor delete m1.tiny
-  ignore_errors: yes  
+    - name: Remove old project, user and flavor
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack project delete demo
+        openstack user delete demo
+        openstack flavor delete m1.tiny1
+        openstack network set public --name nova
+      ignore_errors: yes  
 
-- name: Create a project 
-  become: true
-  become_user: stack
-  shell: |
-    source /home/stack/overcloudrc
-    openstack project create --description 'test project' demo
-  when:   
+    - name: Create a project 
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack project create --description 'test project' demo
+     
 
-- name: Add demo user to project
-  become: true
-  become_user: stack
-  shell: |
-    source /home/stack/overcloudrc
-    openstack user create --project demo --password secretadmin demo
+    - name: Add demo user to project
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack user create --project demo --password secretadmin demo
 
-- name: Add demo user and demo project to member role
-  become: true
-  become_user: stack
-  shell: |
-    source /home/stack/overcloudrc
-    openstack role add --user demo --project demo member  
+    - name: Add demo user and demo project to member role
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack role add --user demo --project demo member  
 
-- name: Update nova external network name to public
-  become: true
-  become_user: stack
-  shell: |
-    source /home/stack/overcloudrc      
-    openstack network set nova --name public
+    - name: Update nova external network name to public
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc      
+        openstack network set nova --name public
 
-- name: Add a flavor 
-  become: true
-  become_user: stack
-  shell: |
-    source /home/stack/overcloudrc    
-    openstack flavor create --public m1.tiny1 --id auto --ram 512 --disk 1 --vcpus 1 --rxtx-factor 1
+    - name: Add a flavor 
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc    
+        openstack flavor create --public m1.tiny1 --id auto --ram 512 --disk 1 --vcpus 1 --rxtx-factor 1
 
-- name: Run Horizon selenium tests
-  include_tasks: run_selenium_tests.yml
-  when: selenium_tests_temp.path is defined
+      
+    - name: Run Horizon selenium tests
+      include_tasks: run_selenium_tests.yml
+      when: selenium_tests_temp.path is defined
+      
+  
+  always:
+          #- name: Create a test folder
+          #file:
+          #path: "{{ selenium_tests_temp.path }}/test2"
+          #state: directory
   
 
-- name: Remove project, user and flavor and update network name
-  become: true
-  become_user: stack
-  shell: |
-    source /home/stack/overcloudrc
-    openstack project delete demo
-    openstack user delete demo
-    openstack flavor delete m1.tiny
-    openstack network set public --name nova
+    - name: Fetch JUnit XML results file
+      fetch:
+        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.xml"
+        dest: "{{ inventory_dir }}/selenium-results/integration_test_results.xml"
+        #dest: "{{ selenium_tests_temp.path }}/test/integration_test_results.xml"
+        flat: yes
+        fail_on_missing: yes
+        # when:
+        #results_formats.junitxml is defined
+  
+
+    - name: Fetch HTML results file
+      fetch:
+        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.html"
+        dest: "{{ inventory_dir }}/selenium-results/integration_test_results.html"
+        #dest: "{{ selenium_tests_temp.path }}/test/integration_test_results.html"
+        flat: yes
+        fail_on_missing: no
+        #when:
+        #results_formats.html is defined
+
+    - name: Remove project, user and flavor and update network name
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack project delete demo
+        openstack user delete demo
+        openstack flavor delete m1.tiny1
+        openstack network set public --name nova
 
