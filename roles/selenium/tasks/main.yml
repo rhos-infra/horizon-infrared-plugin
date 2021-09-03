@@ -98,7 +98,8 @@
     source /home/stack/overcloudrc
     openstack project delete demo
     openstack user delete demo
-    openstack flavor delete m1.tiny
+    openstack flavor delete m1.tiny1
+    openstack network set public --name nova
   ignore_errors: yes  
 
 - name: Create a project 
@@ -149,6 +150,6 @@
     source /home/stack/overcloudrc
     openstack project delete demo
     openstack user delete demo
-    openstack flavor delete m1.tiny
+    openstack flavor delete m1.tiny1
     openstack network set public --name nova
 
