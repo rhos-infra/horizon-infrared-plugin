@@ -91,12 +91,23 @@
   include_tasks: configure_selenium_config.yml
   when: selenium_tests_temp.path is defined
 
+- name: Remove old project, user and flavor
+  become: true
+  become_user: stack
+  shell: |
+    source /home/stack/overcloudrc
+    openstack project delete demo
+    openstack user delete demo
+    openstack flavor delete m1.tiny
+  ignore_errors: yes  
+
 - name: Create a project 
   become: true
   become_user: stack
   shell: |
     source /home/stack/overcloudrc
     openstack project create --description 'test project' demo
+  when:   
 
 - name: Add demo user to project
   become: true
