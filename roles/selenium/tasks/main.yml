@@ -1,5 +1,4 @@
-
-- name: Continue running even if Selenium tests fail
+- name: Run the Selenium Infrared plugin and fetch report files
   block:
     - name: Install rhos-release-latest package and remove old repos
       become: true
@@ -77,7 +76,7 @@
       file:
         path: "{{ geckodriver_temp.path }}"
         state: absent
-      when: geckodriver_temp.path is defined
+        when: geckodriver_temp.path is defined
 
     - name: Create temp directory for selenium tests
       tempfile:
@@ -110,7 +109,6 @@
       shell: |
         source /home/stack/overcloudrc
         openstack project create --description 'test project' demo
-     
 
     - name: Add demo user to project
       become: true
@@ -144,15 +142,14 @@
     - name: Run Horizon selenium tests
       include_tasks: run_selenium_tests.yml
       when: selenium_tests_temp.path is defined
-      
-  
-  always:
-          #- name: Create a test folder
-          #file:
-          #path: "{{ selenium_tests_temp.path }}/test2"
-          #state: directory
-  
+       
 
+  always:
+
+    #- name: Create a test folder
+    #file:
+    #path: "{{ selenium_tests_temp.path }}/test"
+    #state: directory
     - name: Fetch JUnit XML results file
       fetch:
         src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.xml"
@@ -162,7 +159,6 @@
         fail_on_missing: yes
         # when:
         #results_formats.junitxml is defined
-  
 
     - name: Fetch HTML results file
       fetch:
