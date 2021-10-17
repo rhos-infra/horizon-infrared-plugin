@@ -64,6 +64,7 @@
         dest: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
       when: geckodriver_temp.path is defined
 
+      
     - name: Extract the geckodriver
       become: true
       become_user: root
@@ -72,11 +73,11 @@
         dest: "/usr/local/bin"
         remote_src: true
 
-    - name: Remove temp files
-      file:
-        path: "{{ geckodriver_temp.path }}"
-        state: absent
-        when: geckodriver_temp.path is defined
+        #- name: Remove temp files
+        #file:
+        #path: "{{ geckodriver_temp.path }}"
+        #state: absent
+        #when: geckodriver_temp.path is defined
 
     - name: Create temp directory for selenium tests
       tempfile:
@@ -147,6 +148,8 @@
   always:
 
     - name: Create a test folder
+      become: true
+      become_user: root
       file:
         path: "{{ inventory_dir }}/selenium-results"
         state: directory
