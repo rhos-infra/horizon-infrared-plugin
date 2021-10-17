@@ -146,10 +146,11 @@
 
   always:
 
-    #- name: Create a test folder
-    #file:
-    #path: "{{ selenium_tests_temp.path }}/test"
-    #state: directory
+    - name: Create a test folder
+      file:
+        path: "{{ inventory_dir }}/selenium-results"
+        state: directory
+
     - name: Fetch JUnit XML results file
       fetch:
         src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.xml"
