@@ -151,7 +151,7 @@
       become: true
       become_user: root
       file:
-        path: "{{ inventory_dir }}/selenium-results"
+        path: "{{ inventory_dir }}/selenium_results"
         state: directory
 
     - name: Fetch JUnit XML results file
