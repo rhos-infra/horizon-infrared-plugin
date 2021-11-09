@@ -151,13 +151,13 @@
       become: true
       become_user: root
       file:
-        path: "{{ inventory_dir }}/active/tempest-results/"
+        path: "{{ inventory_dir }}/tempest-results/"
         state: directory
 
     - name: Fetch JUnit XML results file
       fetch:
         src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.xml"
-        dest: "{{ inventory_dir }}/active/tempest-results/integration_test_results.xml"
+        dest: "{{ inventory_dir }}/tempest-results/integration_test_results.xml"
         #dest: "{{ selenium_tests_temp.path }}/test/integration_test_results.xml"
         flat: yes
         fail_on_missing: yes
@@ -167,7 +167,7 @@
     - name: Fetch HTML results file
       fetch:
         src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.html"
-        dest: "{{ inventory_dir }}/active/tempest-results/integration_test_results.html"
+        dest: "{{ inventory_dir }}/tempest-results/integration_test_results.html"
         #dest: "{{ selenium_tests_temp.path }}/test/integration_test_results.html"
         flat: yes
         fail_on_missing: no
