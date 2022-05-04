@@ -1,3 +1,6 @@
-# selenium_infrared_plugin
+# horizon-infrared-plugin
 
-This project will be used to run the selenium infrared plugin
+This is an infrared plugin for executing selenium tests from the horizon/upstream on an openstack Deployment.
+
+The plugin was originally developed by Itsik Kanias of Red hat.
+
