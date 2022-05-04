@@ -1,0 +1,10 @@
+---
+# Geckodriver defaults
+geckodriver_base_url: "{{ test.geckodriver.base.url }}"
+geckodriver_version: "{{ test.geckodriver.version  }}"
+
+  # Horizon selenium defaults
+horizon_selenium_gitrepo: "{{ test.horizon.selenium.repo  }}"
+horizon_selenium_git_branch: "{{ test.horizon.selenium.branch }}"
+horizon_selenium_conf: "{{ test.horizon.selenium.config }}"
+

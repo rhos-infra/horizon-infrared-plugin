@@ -1,0 +1,26 @@
+- name: Install git if not present
+  become: true
+  become_user: root
+  yum:
+    name: 'git'
+    state: present
+
+- name: print temp folder
+  debug:
+    var: selenium_tests_temp.path
+
+- name: Render branch name if not provided by user
+  set_fact:
+    rendered_branch_name: "rhos-{{ install.version|default(undercloud_version)| openstack_release }}-trunk-patches"
+  when: test.horizon.selenium.branch is not defined
+
+- name: Clone the Selenium repository from Horizon Selenium {{ install.version|default(undercloud_version)|openstack_release }} git_repo
+  ansible.builtin.git:
+    repo: "{{ horizon_selenium_gitrepo }}"
+    accept_hostkey: yes
+    ssh_opts: -o StrictHostKeyChecking=no 
+    dest: "{{ selenium_tests_temp.path }}"
+    version: "{{ test.horizon.selenium.branch | default(rendered_branch_name) }}"
+  when:
+    - selenium_tests_temp.path is defined 
+

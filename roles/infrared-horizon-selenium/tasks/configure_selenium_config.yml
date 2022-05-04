@@ -1,15 +1,4 @@
-#1. Discover the api key from openstack installation
-#2. Discover username from openstack installation
-#3. Discover password from openstack installation
-#4. Discover dashboard_url from openstack installation
-
-#Use 1.2.3.4 to update the "{{ horizon_selenium_conf }}" file found in the temporary folder that was created using
-#get_selenium_from_git.yml task.
-
-#Use 1.2.3.4 to update the "{{ horizon_selenium_conf }}" file found in the temporary folder that was created using
-#get_selenium_from_git.yml task.
-
-
+---
 - name: print temp folder
   debug:
     var: selenium_tests_temp.path
@@ -40,7 +29,6 @@
 
 - name: Get dashboard URL from openstack installation
   shell: |
-   #echo | awk '{print "dashboard_url=" "http://10.0.0.116/dashboard/"}'
     grep OS_AUTH_URL overcloudrc | awk -F"=" '{print "dashboard_url=" $2"/dashboard/"}' | awk '{gsub(/:5000/, ""); print}'
   register: dashboard_url
   args:
@@ -49,5 +37,5 @@
 - name: Create conf file from template
   template:
     src: templates/local-horizon.conf.j2
-    dest: "{{ selenium_tests_temp.path }}/openstack_dashboard/test/integration_tests/local-horizon.conf"
+    dest: "{{ selenium_tests_temp.path }}/{{  test.horizon.selenium.config  }}"
 
