@@ -11,10 +11,10 @@
 
 - name: Render branch name if not provided by user
   set_fact:
-    rendered_branch_name: "rhos-{{ install.version|default(undercloud_version)| openstack_release }}-trunk-patches"
+    rendered_branch_name: "rhos-{{ osp_release.stdout }}-trunk-patches"
   when: test.horizon.selenium.branch is not defined
 
-- name: Clone the Selenium repository from Horizon Selenium {{ install.version|default(undercloud_version)|openstack_release }} git_repo
+- name: Clone the Selenium repository from Horizon Selenium {{ osp_release.stdout }} git repo
   ansible.builtin.git:
     repo: "{{ horizon_selenium_gitrepo }}"
     accept_hostkey: yes
