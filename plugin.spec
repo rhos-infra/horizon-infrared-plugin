@@ -3,7 +3,7 @@ config:
    plugin_type: test
    entry_point: main.yml
 subparsers:
-   selenium-plugin:
+   horizon-selenium:
         description: This is a Selenium plugin to run UI tests
         include_groups: ["Ansible options", "Inventory", "Common options", "Answers file"]
         groups:

@@ -1,10 +1,9 @@
-- name: Run tests
-  shell: |       
-    sudo -i
-    cd {{ selenium_tests_temp.path }}
-    pip install virtualenv
-    virtualenv .venv
-    . .venv/bin/activate
-    pip install pytest pytest-django pytest-html horizon selenium testtools xvfbwrapper junit2html
-    PATH=$PATH:/usr/local/bin/ INTEGRATION_TESTS=1 SELENIUM_HEADLESS=1 pytest openstack_dashboard/test/integration_tests --ds=openstack_dashboard.test.settings -v --junitxml="test_reports/integration_test_results.xml" --html="test_reports/integration_test_results.html" --self-contained-html
-  
+- name: Copy and execute env setup and test script
+  script: scripts/runtests
+  become: true
+  ignore_errors: yes
+  register: cmd_res
+  failed_when: '"=========================== short test summary info ============================" not in cmd_res.stdout' 
+  args:
+    chdir: "{{ selenium_tests_temp.path  }}"
+

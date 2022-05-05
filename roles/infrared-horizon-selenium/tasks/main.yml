@@ -13,23 +13,10 @@
       shell: cat /home/stack/core_puddle_version | awk -F "-" '{print $2}'
       register: osp_release
 
-    - name: Enable latest rhos-repos for OSP16 on overcloud_nodes
+    - name: "Enable latest rhos-repos for OSP {{ osp_release.stdout }} on overcloud_nodes"
       become: true
       become_user: root
-      shell: rhos-release -P 16;
-      when: '"16.0" in osp_release.stdout'
-
-    - name: Enable latest rhos-repos for OSP16.1 on overcloud_nodes
-      become: true
-      become_user: root
-      shell: rhos-release -P 16.1-trunk;
-      when: '"16.1" in osp_release.stdout'
-
-    - name: Enable latest rhos-repos for OSP16.2 on overcloud_nodes
-      become: true
-      become_user: root
-      shell: rhos-release -P 16.2;
-      when: '"16.2" in osp_release.stdout'
+      shell: rhos-release -P {{ osp_release.stdout }};
 
     - name: Install EPEL repository
       become: true
