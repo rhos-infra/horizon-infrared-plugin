@@ -1,7 +1,5 @@
 #!/bin/bash
 
-python3 -m venv .venv
 . .venv/bin/activate
-pip3 install pytest pytest-django pytest-html horizon selenium testtools xvfbwrapper junit2html
 PATH=$PATH:/usr/local/bin/ INTEGRATION_TESTS=1 SELENIUM_HEADLESS=1 pytest openstack_dashboard/test/integration_tests --ds=openstack_dashboard.test.settings -v --junitxml="test_reports/integration_test_results.xml" --html="test_reports/integration_test_results.html" --self-contained-html
 

@@ -1,3 +1,26 @@
+- name: Update pip and create virtual environment
+  pip:
+    name:
+      - pip
+    state: latest
+    chdir: "{{ selenium_tests_temp.path  }}"
+    virtualenv: .venv
+    virtualenv_command: python3 -m venv
+
+- name: Install python test dependencies in virtual environment
+  pip:
+    name:
+      - pytest
+      - pytest-django
+      - pytest-html
+      - horizon
+      - selenium
+      - testtools
+      - xvfbwrapper
+      - junit2html
+    chdir: "{{ selenium_tests_temp.path  }}"
+    virtualenv: .venv
+
 - name: Copy and execute env setup and test script
   script: scripts/runtests
   become: true

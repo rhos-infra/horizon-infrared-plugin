@@ -19,10 +19,10 @@ repository.
 - [ ] Create a project and user for conducting the test. Clean up when done.
 This should replace the existing mechanism which creates/deletes the demo user
 
-- [ ] With python 3 you don't need to use *virtualenv*, but just
+- [x] With python 3 you don't need to use *virtualenv*, but just
 create a venv with *python3 -m venv*.
 
-- [ ] Complement the above with: Use the 'pip' ansible task and thus replace a
+- [x] Complement the above with: Use the 'pip' ansible task and thus replace a
 good part of roles/infrared-horizon-selenium/tasks/run_selenium_tests.yml
 See:
 docs.ansible.com/ansible/latest/collections/ansible/builtin/pip_module.html
