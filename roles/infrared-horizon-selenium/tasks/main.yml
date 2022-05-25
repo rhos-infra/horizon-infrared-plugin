@@ -78,37 +78,37 @@
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
-        openstack project delete demo
-        openstack user delete demo
+        openstack project delete horizontest
+        openstack user delete horizontest
         openstack flavor delete m1.tiny1
-      ignore_errors: yes  
+      ignore_errors: yes
 
-    - name: Create a project 
+    - name: Create a project
       become: true
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
-        openstack project create --description 'Horizon Selenium test project' demo
+        openstack project create --description 'Horizon Selenium test project' horizontest
 
-    - name: Add demo user to project
+    - name: Add horizontest user to project
       become: true
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
-        openstack user create --project demo --password secretadmin demo
+        openstack user create --project horizontest --password secretadmin horizontest
 
-    - name: Add demo user and demo project to member role
+    - name: Add horizontest user and horizontest project to member role
       become: true
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
-        openstack role add --user demo --project demo member  
+        openstack role add --user horizontest --project horizontest member
 
-    - name: Add a flavor 
+    - name: Add a flavor
       become: true
       become_user: stack
       shell: |
-        source /home/stack/overcloudrc    
+        source /home/stack/overcloudrc
         openstack flavor create --public m1.tiny1 --id auto --ram 512 --disk 1 --vcpus 1 --rxtx-factor 1
 
     - name: Run Horizon selenium tests
@@ -142,6 +142,6 @@
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
-        openstack project delete demo
-        openstack user delete demo
+        openstack project delete horizontest
+        openstack user delete horizontest
         openstack flavor delete m1.tiny1
