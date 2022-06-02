@@ -15,8 +15,8 @@
   args:
     chdir: /home/stack
 
-- name: Get demo username from openstack installation
-  shell: echo | awk '{print "username=" "demo"}'
+- name: Get horizontest username from openstack installation
+  shell: echo | awk '{print "username=" "horizontest"}'
   register: username
   args:
     chdir: /home/stack
