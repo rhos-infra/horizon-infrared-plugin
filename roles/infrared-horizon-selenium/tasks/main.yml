@@ -1,22 +1,24 @@
 - name: Run the Selenium Infrared plugin and fetch report files
   block:
-    - name: Install rhos-release-latest package and remove old repos
-      become: true
-      become_user: root
-      shell: |
-        rpm -ivh http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm;
-        rhos-release -x;
-
     - name: Fetch osp version
       become: true
       become_user: root
       shell: cat /home/stack/core_puddle_version | awk -F "-" '{print $2}'
       register: osp_release
 
-    - name: "Enable latest rhos-repos for OSP {{ osp_release.stdout }} on overcloud_nodes"
+    - name: Fetch OSP build number
       become: true
       become_user: root
-      shell: rhos-release -P {{ osp_release.stdout }};
+      shell: cat /home/stack/core_puddle_version
+      register: osp_build
+
+# TODO build can be "latest" if we want to use in gates
+    - include_role:
+        name: rhos-release
+      vars:
+        release: "{{ osp_release.stdout }}"
+        build: "{{ osp_build.stdout }}"
+      tags: rhos-release
 
     - name: Install EPEL repository
       become: true
