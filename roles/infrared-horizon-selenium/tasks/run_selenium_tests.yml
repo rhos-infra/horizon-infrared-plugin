@@ -14,7 +14,7 @@
       - pytest-django
       - pytest-html
       - horizon
-      - selenium
+      - selenium==3.141.0
       - testtools
       - xvfbwrapper
       - junit2html
