@@ -4,32 +4,20 @@
     var: selenium_tests_temp.path
 
 - name: Get admin username from openstack installation
-  shell: grep OS_USERNAME overcloudrc | awk -F"=" '{print "admin_username=" $2}'
+  shell: grep OS_USERNAME overcloudrc | awk -F"=" '{print $2}'
   register: admin_username
   args:
     chdir: /home/stack
 
 - name: Get password for admin_user from openstack installation
-  shell: grep OS_PASSWORD overcloudrc | awk -F"=" '{print "admin_password=" $2}'
+  shell: grep OS_PASSWORD overcloudrc | awk -F"=" '{print $2}'
   register: admin_password
-  args:
-    chdir: /home/stack
-
-- name: Get horizontest username from openstack installation
-  shell: echo | awk '{print "username=" "horizontest"}'
-  register: username
-  args:
-    chdir: /home/stack
-
-- name: Get password for demo_user from openstack installation
-  shell: echo | awk '{print "password=" "secretadmin"}'
-  register: password
   args:
     chdir: /home/stack
 
 - name: Get dashboard URL from openstack installation
   shell: |
-    grep OS_AUTH_URL overcloudrc | awk -F"=" '{print "dashboard_url=" $2"/dashboard/"}' | awk '{gsub(/:5000/, ""); print}'
+    grep OS_AUTH_URL overcloudrc | awk -F"=" '{print $2"/dashboard/"}' | awk '{gsub(/:5000/, ""); print}'
   register: dashboard_url
   args:
     chdir: /home/stack
@@ -37,5 +25,5 @@
 - name: Create conf file from template
   template:
     src: templates/local-horizon.conf.j2
-    dest: "{{ selenium_tests_temp.path }}/{{  test.horizon.selenium.config  }}"
+    dest: "{{ selenium_tests_temp.path }}/{{ test.horizon.selenium.config }}"
 
