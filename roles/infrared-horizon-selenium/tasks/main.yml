@@ -111,7 +111,7 @@
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
-        openstack flavor create --public m1.tiny --id auto --ram 512 --disk 1 --vcpus 1 --rxtx-factor 1
+        openstack flavor create --public m1.tiny --ram 512 --disk 1 --vcpus 1 --rxtx-factor 1
 
     - name: Run Horizon selenium tests
       include_tasks: run_selenium_tests.yml
