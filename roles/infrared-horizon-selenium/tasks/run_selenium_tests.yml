@@ -26,7 +26,10 @@
   become: true
   ignore_errors: yes
   register: cmd_res
-  failed_when: '"=========================== short test summary info ============================" not in cmd_res.stdout' 
+  failed_when: '"=========================== short test summary info ============================" not in cmd_res.stdout'
   args:
     chdir: "{{ selenium_tests_temp.path  }}"
 
+- name: Display test results
+  debug:
+    msg: "{{ cmd_res }}"
