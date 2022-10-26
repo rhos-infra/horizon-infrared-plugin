@@ -160,3 +160,9 @@
         source /home/stack/overcloudrc
         openstack project delete horizontest
         openstack user delete horizontest
+
+    - name: Uninstall EPEL and rpmfusion repositories
+      become: true
+      become_user: root
+      shell: |
+        sudo dnf remove -y 'epel-release-8*'
