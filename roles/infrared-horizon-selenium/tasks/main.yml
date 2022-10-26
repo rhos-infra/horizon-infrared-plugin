@@ -162,3 +162,9 @@
         openstack project delete horizontest
         openstack user delete horizontest
         openstack flavor delete m1.tiny
+
+    - name: Uninstall EPEL and rpmfusion repositories
+      become: true
+      become_user: root
+      shell: |
+        sudo dnf remove -y 'epel-release-8*'
