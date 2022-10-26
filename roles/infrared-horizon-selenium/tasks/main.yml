@@ -75,15 +75,13 @@
       include_tasks: configure_selenium_config.yml
       when: selenium_tests_temp.path is defined
 
-    - name: Remove old project, user and flavor
+    - name: Remove old project and user
       become: true
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
         openstack project delete horizontest
         openstack user delete horizontest
-        openstack flavor delete m1.tiny
-      ignore_errors: yes
 
     - name: Create a project
       become: true
@@ -106,12 +104,13 @@
         source /home/stack/overcloudrc
         openstack role add --user horizontest --project horizontest member
 
-    - name: Add a flavor
+    - name: Add a flavor if it doesn't exist yet
       become: true
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
         openstack flavor create --public m1.tiny --ram 512 --disk 1 --vcpus 1 --rxtx-factor 1
+      ignore_errors: yes
 
     - name: Download cirros image
       become: true
@@ -154,14 +153,13 @@
         flat: yes
         fail_on_missing: no
 
-    - name: Remove project, user and flavor and update network name
+    - name: Remove project and user
       become: true
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
         openstack project delete horizontest
         openstack user delete horizontest
-        openstack flavor delete m1.tiny
 
     - name: Uninstall EPEL and rpmfusion repositories
       become: true
