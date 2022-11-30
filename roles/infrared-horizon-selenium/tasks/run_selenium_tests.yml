@@ -1,0 +1,35 @@
+- name: Update pip and create virtual environment
+  pip:
+    name:
+      - pip
+    state: latest
+    chdir: "{{ selenium_tests_temp.path  }}"
+    virtualenv: .venv
+    virtualenv_command: python3 -m venv
+
+- name: Install python test dependencies in virtual environment
+  pip:
+    name:
+      - pytest
+      - pytest-django
+      - pytest-html
+      - horizon
+      - selenium==3.141.0
+      - testtools
+      - xvfbwrapper
+      - junit2html
+    chdir: "{{ selenium_tests_temp.path  }}"
+    virtualenv: .venv
+
+- name: Copy and execute env setup and test script
+  script: scripts/runtests
+  become: true
+  ignore_errors: yes
+  register: cmd_res
+  failed_when: '"=========================== short test summary info ============================" not in cmd_res.stdout'
+  args:
+    chdir: "{{ selenium_tests_temp.path  }}"
+
+- name: Display test results
+  debug:
+    msg: "{{ cmd_res }}"

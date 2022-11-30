@@ -1,0 +1,29 @@
+---
+- name: print temp folder
+  debug:
+    var: selenium_tests_temp.path
+
+- name: Get admin username from openstack installation
+  shell: grep OS_USERNAME overcloudrc | awk -F"=" '{print $2}'
+  register: admin_username
+  args:
+    chdir: /home/stack
+
+- name: Get password for admin_user from openstack installation
+  shell: grep OS_PASSWORD overcloudrc | awk -F"=" '{print $2}'
+  register: admin_password
+  args:
+    chdir: /home/stack
+
+- name: Get dashboard URL from openstack installation
+  shell: |
+    grep OS_AUTH_URL overcloudrc | awk -F"=" '{print $2"/dashboard/"}' | awk '{gsub(/:5000/, ""); print}'
+  register: dashboard_url
+  args:
+    chdir: /home/stack
+
+- name: Create conf file from template
+  template:
+    src: templates/local-horizon.conf.j2
+    dest: "{{ selenium_tests_temp.path }}/{{ test.horizon.selenium.config }}"
+

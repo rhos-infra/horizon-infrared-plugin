@@ -1,0 +1,168 @@
+- name: Run the Selenium Infrared plugin and fetch report files
+  block:
+    - name: Fetch osp version
+      become: true
+      become_user: root
+      shell: cat /home/stack/core_puddle_version | awk -F "-" '{print $2}'
+      register: osp_release
+
+    - name: Fetch OSP build number
+      become: true
+      become_user: root
+      shell: cat /home/stack/core_puddle_version
+      register: osp_build
+
+# TODO build can be "latest" if we want to use in gates
+    - include_role:
+        name: rhos-release
+      vars:
+        release: "{{ osp_release.stdout }}"
+        build: "{{ osp_build.stdout }}"
+      tags: rhos-release
+
+    - name: Install EPEL repository
+      become: true
+      become_user: root
+      shell: |
+        sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+        sudo rpm -ql epel-release
+
+    - name: Install rpmfusion repository
+      become: true
+      become_user: root
+      shell: |
+        sudo dnf -y localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm
+        sudo dnf -y install --nogpgcheck https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm
+
+    - name: Install required packages
+      become: true
+      become_user: root
+      yum:
+        name: ['xorg-x11-server-Xvfb', 'firefox']
+        state: present
+
+    - name: Create temp directory for geckodriver
+      tempfile:
+        state: directory
+        suffix: "-geckodriver"
+      register: geckodriver_temp
+
+    - name: Download geckodriver
+      get_url:
+        url: "{{ geckodriver_base_url }}v{{ geckodriver_version }}/geckodriver-v{{ geckodriver_version }}-linux64.tar.gz"
+        dest: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
+      when: geckodriver_temp.path is defined
+
+    - name: Extract the geckodriver
+      become: true
+      become_user: root
+      unarchive:
+        src: "{{ geckodriver_temp.path }}/geckodriver.tar.gz"
+        dest: "/usr/local/bin"
+        remote_src: true
+
+    - name: Create temp directory for selenium tests
+      tempfile:
+        state: directory
+        suffix: "-selenium-tests"
+      register: selenium_tests_temp
+
+    - name: Get selenium tests
+      include_tasks: get_selenium_from_git.yml
+      when: selenium_tests_temp.path is defined
+
+    - name: Configure Selenium config file
+      include_tasks: configure_selenium_config.yml
+      when: selenium_tests_temp.path is defined
+
+    - name: Remove old project and user
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack project delete horizontest
+        openstack user delete horizontest
+
+    - name: Create a project
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack project create --description 'Horizon Selenium test project' horizontest
+
+    - name: Add horizontest user to project
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack user create --project horizontest --password secretadmin horizontest
+
+    - name: Add horizontest user and horizontest project to member role
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack role add --user horizontest --project horizontest member
+
+    - name: Add a flavor if it doesn't exist yet
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack flavor create --public m1.tiny --ram 512 --disk 1 --vcpus 1 --rxtx-factor 1
+      ignore_errors: yes
+
+    - name: Download cirros image
+      become: true
+      become_user: stack
+      get_url:
+        url: http://download.cirros-cloud.net/0.5.1/cirros-0.5.1-x86_64-disk.img
+        dest: /home/stack/cirros-0.5.1-x86_64-disk.img
+        mode: '0777'
+
+    - name: Upload image to glance
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack image create --min-disk 10 --min-ram 512 --disk-format qcow2 --file /home/stack/cirros-0.5.1-x86_64-disk.img --public cirros
+
+    - name: Run Horizon selenium tests
+      include_tasks: run_selenium_tests.yml
+      when: selenium_tests_temp.path is defined
+
+  always:
+    - name: Create a test folder
+      become: true
+      become_user: root
+      file:
+        path: "{{ inventory_dir }}/test_results/"
+        state: directory
+
+    - name: Fetch JUnit XML results file
+      fetch:
+        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.xml"
+        dest: "{{ inventory_dir }}/test_results/integration_test_results.xml"
+        flat: yes
+        fail_on_missing: yes
+
+    - name: Fetch HTML results file
+      fetch:
+        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.html"
+        dest: "{{ inventory_dir }}/test_results/integration_test_results.html"
+        flat: yes
+        fail_on_missing: no
+
+    - name: Remove project and user
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack project delete horizontest
+        openstack user delete horizontest
+
+    - name: Uninstall EPEL and rpmfusion repositories
+      become: true
+      become_user: root
+      shell: |
+        sudo dnf remove -y 'epel-release-8*'
