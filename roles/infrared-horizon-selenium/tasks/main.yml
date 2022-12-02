@@ -117,8 +117,8 @@
       become: true
       become_user: stack
       get_url:
-        url: http://download.cirros-cloud.net/0.5.1/cirros-0.5.1-x86_64-disk.img
-        dest: /home/stack/cirros-0.5.1-x86_64-disk.img
+        url: http://download.cirros-cloud.net/0.5.2/cirros-0.5.2-x86_64-disk.img
+        dest: /home/stack/cirros-0.5.2-x86_64-disk.img
         mode: '0777'
 
     - name: Upload image to glance
@@ -126,7 +126,7 @@
       become_user: stack
       shell: |
         source /home/stack/overcloudrc
-        openstack image create --min-disk 1 --min-ram 512 --disk-format qcow2 --file /home/stack/cirros-0.5.1-x86_64-disk.img --public cirros
+        openstack image create --min-disk 1 --min-ram 512 --disk-format qcow2 --file /home/stack/cirros-0.5.2-x86_64-disk.img --public cirros-0.5.2-x86_64-disk.img
 
     - name: Run Horizon selenium tests
       include_tasks: run_selenium_tests.yml
