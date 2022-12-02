@@ -22,6 +22,14 @@
   args:
     chdir: /home/stack
 
+- name: Get network name
+  become: true
+  become_user: stack
+  shell: |
+    source /home/stack/overcloudrc
+    openstack network list --external -f json | grep -Po '"Name": *"\K[^"]*'
+  register: network_name
+
 - name: Create conf file from template
   template:
     src: templates/local-horizon.conf.j2

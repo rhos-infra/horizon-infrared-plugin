@@ -8,6 +8,6 @@ home_project = horizontest
 [dashboard]
 dashboard_url = {{ dashboard_url.stdout }}
 [network]
-external_network = nova
+external_network = {{ network_name.stdout }}
 [launch_instance]
 image_name = cirros-0.5.2-x86_64-disk.img (15.5 MB)
