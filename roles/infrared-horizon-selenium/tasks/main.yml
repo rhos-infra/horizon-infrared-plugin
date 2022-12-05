@@ -121,12 +121,17 @@
         dest: /home/stack/cirros-0.5.2-x86_64-disk.img
         mode: '0777'
 
-    - name: Upload image to glance
-      become: true
-      become_user: stack
-      shell: |
-        source /home/stack/overcloudrc
-        openstack image create --min-disk 1 --min-ram 512 --disk-format qcow2 --file /home/stack/cirros-0.5.2-x86_64-disk.img --public cirros-0.5.2-x86_64-disk.img
+
+    - name: upload image
+      os_image:
+        cloud: overcloud
+        name: cirros-0.5.2-x86_64-disk
+        container_format: bare
+        disk_format: qcow2
+        state: present
+        is_public: yes
+        filename: /home/stack/cirros-0.5.2-x86_64-disk.img
+
 
     - name: Run Horizon selenium tests
       include_tasks: run_selenium_tests.yml
