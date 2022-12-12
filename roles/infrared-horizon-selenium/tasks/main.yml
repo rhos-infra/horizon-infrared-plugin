@@ -121,7 +121,6 @@
         dest: /home/stack/cirros-0.5.2-x86_64-disk.img
         mode: '0777'
 
-
     - name: upload image
       os_image:
         cloud: overcloud
@@ -131,7 +130,6 @@
         state: present
         is_public: yes
         filename: /home/stack/cirros-0.5.2-x86_64-disk.img
-
 
     - name: Run Horizon selenium tests
       include_tasks: run_selenium_tests.yml
