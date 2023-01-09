@@ -1,0 +1,20 @@
+- name: print temp folder
+  debug:
+    var: selenium_tests_temp.path
+
+- name: Copy tests from Horizon Container to Controller
+  become: true
+  become_user: stack
+  shell: |
+    ssh -T controller-0.ctlplane<<'EOT'
+    sudo podman cp horizon:/usr/share/openstack-dashboard/ .
+    EOT
+
+- name: Copy tests to Undercloud
+  become: true
+  become_user: stack
+  shell: |
+    scp -r controller-0.ctlplane:~/openstack-dashboard/openstack_dashboard/ "{{ selenium_tests_temp.path }}"/openstack_dashboard ;
+    scp -r controller-0.ctlplane:~/openstack-dashboard/manage.py "{{ selenium_tests_temp.path }}"
+
+
