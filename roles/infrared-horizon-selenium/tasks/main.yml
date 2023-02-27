@@ -40,6 +40,7 @@
       yum:
         name: ['xorg-x11-server-Xvfb', 'firefox']
         state: present
+        disable_gpg_check: True
 
     - name: Create temp directory for geckodriver
       tempfile:
