@@ -76,6 +76,13 @@
       include_tasks: configure_selenium_config.yml
       when: selenium_tests_temp.path is defined
 
+    - name: Configure External network to be shared
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack network set --share {{ network_name.stdout }}
+
     - name: Remove old project
       os_project:
         cloud: overcloud
@@ -154,19 +161,12 @@
         path: "{{ inventory_dir }}/test_results/"
         state: directory
 
-    - name: Fetch JUnit XML results file
-      fetch:
-        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.xml"
-        dest: "{{ inventory_dir }}/test_results/integration_test_results.xml"
-        flat: yes
-        fail_on_missing: yes
-
-    - name: Fetch HTML results file
-      fetch:
-        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.html"
-        dest: "{{ inventory_dir }}/test_results/integration_test_results.html"
-        flat: yes
-        fail_on_missing: no
+    - name: Configure External network back to no share
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack network set --no-share {{ network_name.stdout }}
 
     - name: Remove old project
       os_project:
@@ -185,3 +185,17 @@
       become_user: root
       shell: |
         sudo dnf remove -y 'epel-release-8*'
+
+    - name: Fetch JUnit XML results file
+      fetch:
+        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.xml"
+        dest: "{{ inventory_dir }}/test_results/integration_test_results.xml"
+        flat: yes
+        fail_on_missing: yes
+
+    - name: Fetch HTML results file
+      fetch:
+        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.html"
+        dest: "{{ inventory_dir }}/test_results/integration_test_results.html"
+        flat: yes
+        fail_on_missing: no
