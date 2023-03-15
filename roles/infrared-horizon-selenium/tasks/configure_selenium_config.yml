@@ -35,7 +35,7 @@
   become_user: stack
   shell: |
     source /home/stack/overcloudrc
-    openstack volume type list -f json | grep tripleo | grep -Po '"Name": *"\K[^"]*'
+    openstack volume type list -c Name -f value | grep tripleo
   register: volume_type
 
 - name: Create conf file from template
