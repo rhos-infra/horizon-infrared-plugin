@@ -188,14 +188,14 @@
 
     - name: Fetch JUnit XML results file
       fetch:
-        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.xml"
-        dest: "{{ inventory_dir }}/test_results/integration_test_results.xml"
+        src: "{{ selenium_tests_temp.path }}/test_reports/ui_integration_test_results.xml"
+        dest: "{{ inventory_dir }}/test_results/ui_integration_test_results.xml"
         flat: yes
         fail_on_missing: yes
 
     - name: Fetch HTML results file
       fetch:
-        src: "{{ selenium_tests_temp.path }}/test_reports/integration_test_results.html"
-        dest: "{{ inventory_dir }}/test_results/integration_test_results.html"
+        src: "{{ selenium_tests_temp.path }}/test_reports/ui_integration_test_results.html"
+        dest: "{{ inventory_dir }}/test_results/ui_integration_test_results.html"
         flat: yes
         fail_on_missing: no
