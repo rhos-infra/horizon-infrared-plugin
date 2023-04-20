@@ -76,12 +76,28 @@
       include_tasks: configure_selenium_config.yml
       when: selenium_tests_temp.path is defined
 
-    - name: Configure External network to be shared
-      become: true
-      become_user: stack
-      shell: |
-        source /home/stack/overcloudrc
-        openstack network set --share {{ network_name.stdout }}
+    - name: Create internal network
+      os_network:
+        cloud: overcloud
+        state: present
+        name: internal
+
+    - name: Create sub-internal subnet
+      os_subnet:
+        cloud: overcloud
+        state: present
+        network_name: internal
+        name: sub-internal
+        cidr: "172.0.0.1/24"
+
+    - name: Create a router
+      os_router:
+        cloud: overcloud
+        state: present
+        name: router1
+        network: public
+        interfaces:
+        - sub-internal
 
     - name: Remove old project
       os_project:
@@ -160,13 +176,6 @@
       file:
         path: "{{ inventory_dir }}/test_results/"
         state: directory
-
-    - name: Configure External network back to no share
-      become: true
-      become_user: stack
-      shell: |
-        source /home/stack/overcloudrc
-        openstack network set --no-share {{ network_name.stdout }}
 
     - name: Remove old project
       os_project:
