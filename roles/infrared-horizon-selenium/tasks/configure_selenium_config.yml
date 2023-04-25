@@ -38,6 +38,14 @@
     openstack volume type list -c Name -f value | grep tripleo
   register: volume_type
 
+- name: Get backend deployment name
+  become: true
+  become_user: stack
+  shell: |
+    source /home/stack/overcloudrc
+    openstack volume service list -c Host -f value | grep hostgroup
+  register: backend_name
+
 - name: Create conf file from template
   template:
     src: templates/local-horizon.conf.j2
