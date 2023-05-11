@@ -18,6 +18,7 @@
       - testtools
       - xvfbwrapper
       - junit2html
+      - urllib3<2  
     chdir: "{{ selenium_tests_temp.path  }}"
     virtualenv: .venv
 
