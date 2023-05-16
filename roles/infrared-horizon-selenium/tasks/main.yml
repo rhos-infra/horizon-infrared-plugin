@@ -178,35 +178,38 @@
         path: "{{ inventory_dir }}/test_results/"
         state: directory
 
-    - name: Remove old project
-      os_project:
-        cloud: overcloud
-        state: absent
-        name: horizontest
+    - name: Perform clean-up tasks
+      block:
+        - name: Remove old project
+          os_project:
+            cloud: overcloud
+            state: absent
+            name: horizontest
 
-    - name: Remove old user
-      os_user:
-        cloud: overcloud
-        state: absent
-        name: horizontest
-        
-    - name: Remove Router
-      os_router:
-        cloud: overcloud
-        state: absent
-        name: router1
+        - name: Remove old user
+          os_user:
+            cloud: overcloud
+            state: absent
+            name: horizontest
 
-    - name: Remove internal network
-      os_network:
-        cloud: overcloud
-        state: absent
-        name: internal    
-        
-    - name: Uninstall EPEL and rpmfusion repositories
-      become: true
-      become_user: root
-      shell: |
-        sudo dnf remove -y 'epel-release-8*'
+        - name: Remove Router
+          os_router:
+            cloud: overcloud
+            state: absent
+            name: router1
+
+        - name: Remove internal network
+          os_network:
+            cloud: overcloud
+            state: absent
+            name: internal
+
+        - name: Uninstall EPEL and rpmfusion repositories
+          become: true
+          become_user: root
+          shell: |
+            sudo dnf remove -y 'epel-release-8*'
+      ignore_errors: yes
 
     - name: Fetch JUnit XML results file
       fetch:
