@@ -112,6 +112,25 @@
         state: absent
         name: horizontest
 
+    - name: Find all images
+      become: true
+      become_user: stack
+      shell: |
+        source /home/stack/overcloudrc
+        openstack image list -c Name -f value | paste -s
+      register: images
+
+    - name: Create list of images
+      set_fact:
+        image_list: "{{ images.stdout.split('\t') }}"
+
+    - name: Delete all images
+      os_image:
+        cloud: overcloud
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ image_list }}"
+
     - name: Create a project
       os_project:
         cloud: overcloud
