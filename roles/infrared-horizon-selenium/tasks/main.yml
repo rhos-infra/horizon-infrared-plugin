@@ -1,5 +1,5 @@
 - name: Run the Selenium Infrared plugin and fetch report files
-    block:
+  block:
     - name: Fetch osp version
       become: true
       become_user: root
