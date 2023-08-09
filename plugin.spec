@@ -34,4 +34,13 @@ subparsers:
                       help: |
                           The location of the horizon.conf file to be used
                       default: "openstack_dashboard/test/integration_tests/local-horizon.conf"
-     
+
+                  tls-ca:
+                      type: Value
+                      help: |
+                          Specifies the custom CA public key. Might be URL or a link to local file.
+                          Might be several certificates provided, separated with coma
+                          Example:
+                                --tls-ca=https://foo.com/ca.pem,http://bar.org/cert.pem
+                                --tls-ca=/foo/bar/ca.pem
+                      default: ''

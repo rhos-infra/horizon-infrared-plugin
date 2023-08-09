@@ -13,6 +13,16 @@
       register: osp_build
 
 # TODO build can be "latest" if we want to use in gates
+
+    - name: Install custom CA if needed
+      include_role:
+        name: tls-ca
+      vars:
+        tlsca: "{{ test.tls.ca }}"
+        ansible_become: true
+        ansible_become_user: root
+      when: test.tls.ca != ''
+
     - include_role:
         name: rhos-release
       vars:
