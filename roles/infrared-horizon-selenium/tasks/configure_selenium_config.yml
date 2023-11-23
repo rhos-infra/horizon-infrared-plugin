@@ -43,7 +43,7 @@
   become_user: stack
   shell: |
     source /home/stack/overcloudrc
-    openstack volume service list -c Host -f value | grep hostgroup
+    openstack volume service list -c Host -f value | grep hostgroup | head -n 1
   register: backend_name
 
 - name: Create conf file from template
