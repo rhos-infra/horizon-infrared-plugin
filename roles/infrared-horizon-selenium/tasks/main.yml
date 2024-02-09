@@ -72,16 +72,6 @@
         dest: "/usr/local/bin"
         remote_src: true
 
-    - name: Create temp directory for selenium tests
-      tempfile:
-        state: directory
-        suffix: "-selenium-tests"
-      register: selenium_tests_temp
-
-    - name: Get selenium tests
-      include_tasks: get_selenium_from_git.yml
-      when: selenium_tests_temp.path is defined
-
     - name: Configure Selenium config file
       include_tasks: configure_selenium_config.yml
       when: selenium_tests_temp.path is defined

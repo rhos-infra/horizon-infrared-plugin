@@ -1,6 +1,7 @@
 ---
+- name: Fetch tests
+  import_playbook: fetch_test_from_rpm.yml 
+
 - name: Main Play - Execute plugin
-  hosts: undercloud
-  roles:
-    - role: infrared-horizon-selenium
+  import_playbook: run_plugin.yml
 

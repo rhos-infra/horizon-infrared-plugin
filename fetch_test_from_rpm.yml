@@ -1,0 +1,29 @@
+---
+- name: Fetch tests from RPM
+  hosts: controller[0]
+  tasks:
+    - name: Get tests from horizon container
+      shell: |
+        sudo podman cp horizon:/usr/share/openstack-dashboard/ .
+
+- name: Copy test
+  hosts: undercloud
+  tasks:
+    - name: Create temp directory for selenium tests
+      tempfile:
+        state: directory
+        suffix: "-selenium-tests"
+      register: selenium_tests_temp
+
+    - name: print temp folder
+      debug:
+        var: selenium_tests_temp.path
+
+    - name: Copy tests to undercloud
+      become: true
+      become_user: stack
+      shell: |
+        scp -r controller-0.ctlplane:~/openstack-dashboard/openstack_dashboard/ "{{ selenium_tests_temp.path }}"/openstack_dashboard ;
+        scp -r controller-0.ctlplane:~/openstack-dashboard/manage.py "{{ selenium_tests_temp.path }}"
+
+
