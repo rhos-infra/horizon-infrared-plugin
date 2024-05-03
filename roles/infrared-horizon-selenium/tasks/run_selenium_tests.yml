@@ -10,7 +10,7 @@
 - name: Install python test dependencies in virtual environment
   pip:
     name:
-      - pytest
+      - pytest==7.3.2
       - pytest-django
       - pytest-html
       - Django==2.2.28
