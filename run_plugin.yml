@@ -1,0 +1,6 @@
+---
+- name: Main Play - Execute plugin
+  hosts: undercloud
+  roles:
+    - role: infrared-horizon-selenium
+
